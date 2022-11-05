@@ -26,8 +26,8 @@ YELLOW = (255, 255, 0)
 ORANGE = (139, 69, 0)
 GREY = (131, 139, 139)
 
-MAX_SHIP_CHOICES = 4
-MAX_GUESSES = 2
+# MAX_SHIP_CHOICES = 4
+# MAX_GUESSES = 2
 
 grid_boxes_left = [
     [(110, 110), (185, 110), (260, 110), (335, 110), (410, 110), (485, 110), (560, 110)],
@@ -130,7 +130,7 @@ def draw_winner(player : int):
     pygame.time.delay(5000)
 
 
-def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : list, guess_box_1 : list, guess_box_2 : list, past_guesses_1 : list, past_guesses_2 : list, player : int):
+def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : list, guess_box_1 : list, guess_box_2 : list, past_guesses_1 : list, past_guesses_2 : list, player : int, max_ship_choices : int, max_guesses : int):
     if len(selected_boxes_1) == 0 or len(selected_boxes_2) == 0:
         draw_winner(player)
         return 10
@@ -161,7 +161,7 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
     pygame.draw.rect(WIN, WHITE, BORDER)
 
     if player == 1 or player == 3:
-        if len(guess_box_1) >= MAX_GUESSES:
+        if len(guess_box_1) >= max_guesses:
             max_choices_error = MAX_SHIPS_FONT.render("You have reached the maximum number of choices!", 1, RED)
             clear_choices = MAX_SHIPS_FONT.render("To clear selections, press spacebar.", 1, RED)
             enter_continue = MAX_SHIPS_FONT.render("To continue, press Enter.", 1, RED)
@@ -200,11 +200,11 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
         WIN.blit(cannot_see, (1110 - (cannot_see.get_width() // 2), 330))
 
         if player == 3:
-            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(MAX_GUESSES) + " spot(s) for enemy ships.", 1, RED)
+            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(max_guesses) + " spot(s) for enemy ships.", 1, RED)
             WIN.blit(choose_more, (372 - (choose_more.get_width() // 2), 750))
 
     elif player == 2 or player == 4:
-        if len(guess_box_2) >= MAX_GUESSES:
+        if len(guess_box_2) >= max_guesses:
             max_choices_error = MAX_SHIPS_FONT.render("You have reached the maximum number of choices!", 1, RED)
             clear_choices = MAX_SHIPS_FONT.render("To clear selections, press spacebar.", 1, RED)
             enter_continue = MAX_SHIPS_FONT.render("To continue, press Enter.", 1, RED)
@@ -253,13 +253,13 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
         WIN.blit(cannot_see, (372 - (cannot_see.get_width() // 2), 330))
 
         if player == 4:
-            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(MAX_GUESSES) + " spot(s) for enemy ships.", 1, RED)
+            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(max_guesses) + " spot(s) for enemy ships.", 1, RED)
             WIN.blit(choose_more, (1110 - (choose_more.get_width() // 2), 750))
 
     pygame.display.update()
 
 
-def draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player):
+def draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player, max_ship_choices):
     WIN.fill(BLUE)
 
     player1 = PLAYER_FONT.render("Player 1", 1, BLACK)
@@ -272,11 +272,11 @@ def draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player):
     pygame.draw.circle(WIN, RED, mouse_pos, 10)
     pygame.draw.rect(WIN, WHITE, BORDER)
 
-    write_choices = MAX_SHIPS_FONT.render("Choose " + str(MAX_SHIP_CHOICES) + " spots for your ships.", 1, RED)
+    write_choices = MAX_SHIPS_FONT.render("Choose " + str(max_ship_choices) + " spots for your ships.", 1, RED)
     WIN.blit(write_choices, ((WIDTH//2) - (write_choices.get_width() // 2), 30))
 
     if player == 1 or player == 3:
-        if len(selected_boxes_1) >= MAX_SHIP_CHOICES:
+        if len(selected_boxes_1) >= max_ship_choices:
             max_ships_error = MAX_SHIPS_FONT.render("You have reached the maximum number of ships!", 1, RED)
             clear_ships = MAX_SHIPS_FONT.render("To clear selections, press spacebar.", 1, RED)
             enter_continue = MAX_SHIPS_FONT.render("To continue, press Enter.", 1, RED)
@@ -292,11 +292,11 @@ def draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player):
         WIN.blit(cannot_see, (1110 - (cannot_see.get_width() // 2), 330))
 
         if player == 3:
-            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(MAX_SHIP_CHOICES) + " spots for ships.", 1, RED)
+            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(max_ship_choices) + " spots for ships.", 1, RED)
             WIN.blit(choose_more, (372 - (choose_more.get_width() // 2), 750))
 
     elif player == 2 or player == 4:
-        if len(selected_boxes_2) >= MAX_SHIP_CHOICES:
+        if len(selected_boxes_2) >= max_ship_choices:
             max_ships_error = MAX_SHIPS_FONT.render("You have reached the maximum number of ships!", 1, RED)
             clear_ships = MAX_SHIPS_FONT.render("To clear selections, press spacebar.", 1, RED)
             enter_continue = MAX_SHIPS_FONT.render("To continue, press Enter.", 1, RED)
@@ -312,13 +312,13 @@ def draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player):
         WIN.blit(cannot_see, (372 - (cannot_see.get_width() // 2), 330))
 
         if player == 4:
-            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(MAX_SHIP_CHOICES) + " spots for ships.", 1, RED)
+            choose_more = MAX_SHIPS_FONT.render("You have not yet selected " + str(max_ship_choices) + " spots for ships.", 1, RED)
             WIN.blit(choose_more, (1110 - (choose_more.get_width() // 2), 750))
 
     pygame.display.update()
 
 
-def main():
+def main(max_ship_choices, max_guesses):
     selected_boxes_1 = []
     selected_boxes_2 = []
     guess_box_1 = []
@@ -342,14 +342,14 @@ def main():
                 if event.button == 1:
                     if not to_game:
                         if player == 1 or player == 3:
-                            get_ship_grid_box(mouse_pos, selected_boxes_1, past_guesses_1, player, MAX_SHIP_CHOICES, False)
+                            get_ship_grid_box(mouse_pos, selected_boxes_1, past_guesses_1, player, max_ship_choices, False)
                         elif player == 2 or player == 4:
-                            get_ship_grid_box(mouse_pos, selected_boxes_2, past_guesses_1, player, MAX_SHIP_CHOICES, False)
+                            get_ship_grid_box(mouse_pos, selected_boxes_2, past_guesses_1, player, max_ship_choices, False)
                     else:
                         if player == 1 or player == 3:
-                            get_ship_grid_box(mouse_pos, guess_box_1, past_guesses_1, player, MAX_GUESSES, True)
+                            get_ship_grid_box(mouse_pos, guess_box_1, past_guesses_1, player, max_guesses, True)
                         elif player == 2 or player == 4:
-                            get_ship_grid_box(mouse_pos, guess_box_2, past_guesses_2, player, MAX_GUESSES, True)
+                            get_ship_grid_box(mouse_pos, guess_box_2, past_guesses_2, player, max_guesses, True)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
@@ -367,12 +367,12 @@ def main():
                 if event.key == pygame.K_RETURN:
                     if not to_game:
                         if player == 1:
-                            if len(selected_boxes_1) == MAX_SHIP_CHOICES:
+                            if len(selected_boxes_1) == max_ship_choices:
                                 player = 2
                             else:
                                 player = 3
                         elif player == 2:
-                            if len(selected_boxes_2) == MAX_SHIP_CHOICES:
+                            if len(selected_boxes_2) == max_ship_choices:
                                 to_game = True
                                 player = 1
                             else:
@@ -380,38 +380,126 @@ def main():
                     
                     else:
                         if player == 1:
-                            if len(guess_box_1) == MAX_GUESSES:
+                            if len(guess_box_1) == max_guesses:
                                 player = 2
                             else:
                                 player = 3
                         elif player == 2:
-                            if len(guess_box_2) == MAX_GUESSES:
+                            if len(guess_box_2) == max_guesses:
                                 player = 1
                             else:
                                 player = 4
 
 
         if not to_game:
-            if len(selected_boxes_1) == MAX_SHIP_CHOICES and player == 3:
+            if len(selected_boxes_1) == max_ship_choices and player == 3:
                 player = 1
 
-            if len(selected_boxes_2) == MAX_SHIP_CHOICES and player == 4:
+            if len(selected_boxes_2) == max_ship_choices and player == 4:
                 player = 2
         else:
-            if len(guess_box_1) == MAX_GUESSES and player == 3:
+            if len(guess_box_1) == max_guesses and player == 3:
                 player = 1
 
-            if len(guess_box_2) == MAX_GUESSES and player == 4:
+            if len(guess_box_2) == max_guesses and player == 4:
                 player = 2
         #print(str(player))
 
         if to_game:
-            if draw_game(mouse_pos, selected_boxes_1, selected_boxes_2, guess_box_1, guess_box_2, past_guesses_1, past_guesses_2, player) == 10:
+            if draw_game(mouse_pos, selected_boxes_1, selected_boxes_2, guess_box_1, guess_box_2, past_guesses_1, past_guesses_2, player, max_ship_choices, max_guesses) == 10:
                 run = False
         else:
-            draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player)
+            draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player, max_ship_choices)
 
     menu()
+
+def choose_choices_num(ships_num):
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(FPS)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    main(ships_num, 1)
+                    break
+                elif event.key == pygame.K_2:
+                    main(ships_num, 2)
+                    break
+                elif event.key == pygame.K_3:
+                    main(ships_num, 3)
+                    break
+
+        WIN.fill(BLUE)
+
+        ships_selected = MAX_SHIPS_FONT.render("You have selected " + str(ships_num) + " ships to add.", 1, RED)
+        choose_choices = MAX_SHIPS_FONT.render("Choose the number of guesses you have, from 1 to 3.", 1, RED)
+        press_num = MAX_SHIPS_FONT.render("Press the numbers to select.", 1, RED)
+
+        WIN.blit(ships_selected, ((WIDTH // 2) - (ships_selected.get_width() // 2), (HEIGHT // 2) - (ships_selected.get_height() // 2) - 100))
+        WIN.blit(choose_choices, ((WIDTH // 2) - (choose_choices.get_width() // 2), (HEIGHT // 2) - (choose_choices.get_height() // 2)))
+        WIN.blit(press_num, ((WIDTH // 2) - (press_num.get_width() // 2), (HEIGHT // 2) - (press_num.get_height() // 2) + 100))
+
+        pygame.display.update()
+
+    pygame.quit()
+
+def choose_ships_num():
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(FPS)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                pygame.quit()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    choose_choices_num(1)
+                    break
+                elif event.key == pygame.K_2:
+                    choose_choices_num(2)
+                    break
+                elif event.key == pygame.K_3:
+                    choose_choices_num(3)
+                    break
+                elif event.key == pygame.K_4:
+                    choose_choices_num(4)
+                    break
+                elif event.key == pygame.K_5:
+                    choose_choices_num(5)
+                    break
+                elif event.key == pygame.K_6:
+                    choose_choices_num(6)
+                    break
+                elif event.key == pygame.K_7:
+                    choose_choices_num(7)
+                    break
+                elif event.key == pygame.K_8:
+                    choose_choices_num(8)
+                    break
+                elif event.key == pygame.K_9:
+                    choose_choices_num(9)
+                    break
+
+        WIN.fill(BLUE)
+
+        choose_ships = MAX_SHIPS_FONT.render("Choose the number of ships to add, from 1 to 9.", 1, RED)
+        press_num = MAX_SHIPS_FONT.render("Press the numbers to select.", 1, RED)
+
+        WIN.blit(choose_ships, ((WIDTH // 2) - (choose_ships.get_width() // 2), (HEIGHT // 2) - (choose_ships.get_height() // 2)))
+        WIN.blit(press_num, ((WIDTH // 2) - (press_num.get_width() // 2), (HEIGHT // 2) - (press_num.get_height() // 2) + 100))
+
+        pygame.display.update()
+
+    pygame.quit()
+
+
 
 def menu():
     clock = pygame.time.Clock()
@@ -425,10 +513,13 @@ def menu():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                pygame.quit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_1:
-                    main()
+                    choose_ships_num()
                     run = False
+
+    pygame.quit()
 
 if __name__ == "__main__":
     menu()
