@@ -10,7 +10,11 @@ pygame.display.set_caption("Maze Game")
 
 BORDER = pygame.Rect(WIDTH//2 - 5, 0, 10, HEIGHT)
 
+MENU_IMAGE = pygame.image.load('menu.png')
+MENU = pygame.transform.scale(MENU_IMAGE, (WIDTH, HEIGHT))
+
 MAX_SHIPS_FONT = pygame.font.SysFont('comicsans', 20)
+PLAYER_FONT = pygame.font.SysFont('comicsans', 40)
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -22,8 +26,8 @@ YELLOW = (255, 255, 0)
 ORANGE = (139, 69, 0)
 GREY = (131, 139, 139)
 
-MAX_SHIP_CHOICES = 3
-MAX_GUESSES = 1
+MAX_SHIP_CHOICES = 4
+MAX_GUESSES = 2
 
 grid_boxes_left = [
     [(110, 110), (185, 110), (260, 110), (335, 110), (410, 110), (485, 110), (560, 110)],
@@ -109,12 +113,34 @@ def draw_grids():
         pygame.draw.rect(WIN, GREY, pygame.Rect(850, y, 530, 5))
         y += 75
 
+def draw_winner(player : int):
+    WIN.fill(BLUE)
+    player_text = ""
+    if player == 1:
+        player_text = PLAYER_FONT.render("Player 2 won!", 1, BLACK)
+    else:
+        player_text = PLAYER_FONT.render("Player 1 won!", 1, BLACK)
+
+    wait_text = PLAYER_FONT.render("Wait 5 seconds to play again.", 1, BLACK)
+
+    WIN.blit(player_text, ((WIDTH // 2) - (player_text.get_width() // 2), (HEIGHT // 2) - (player_text.get_height() // 2)))
+    WIN.blit(wait_text, ((WIDTH // 2) - (wait_text.get_width() // 2), (HEIGHT // 2) - (wait_text.get_height() // 2) + 100))
+
+    pygame.display.update()
+    pygame.time.delay(5000)
+
 
 def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : list, guess_box_1 : list, guess_box_2 : list, past_guesses_1 : list, past_guesses_2 : list, player : int):
     if len(selected_boxes_1) == 0 or len(selected_boxes_2) == 0:
-        pygame.quit()
+        draw_winner(player)
+        return 10
     
     WIN.fill(BLUE)
+
+    player1 = PLAYER_FONT.render("Player 1", 1, BLACK)
+    player2 = PLAYER_FONT.render("Player 2", 1, BLACK)
+    WIN.blit(player1, ((WIDTH // 4) - (player1.get_width() // 2), 40))
+    WIN.blit(player2, ((WIDTH // 4) + (WIDTH // 2) - (player2.get_width() // 2), 40))
 
     draw_grids()
 
@@ -145,8 +171,8 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
 
 
         if len(guess_box_1) > 0:
-            guess = guess_box_1[0]
-            pygame.draw.circle(WIN, BLACK, (guess[0] - 740, guess[1]), 20)
+            for guess in guess_box_1:
+                pygame.draw.circle(WIN, BLACK, (guess[0] - 740, guess[1]), 20)
 
         for (guess, is_hit) in past_guesses_1:
             if is_hit:
@@ -156,14 +182,16 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
 
         hit = False
         if len(guess_box_2) > 0:
-            for box in selected_boxes_1:
-                if guess_box_2[0] == box:
-                    selected_boxes_1.remove(box)
-                    hit = True
-        if hit and len(guess_box_2) > 0:
-            past_guesses_2.append((guess_box_2[0], True))
-        elif not hit and len(guess_box_2) > 0:
-            past_guesses_2.append((guess_box_2[0], False))
+            for guess in guess_box_2:
+                for box in selected_boxes_1:
+                    if guess == box:
+                        selected_boxes_1.remove(box)
+                        hit = True
+                        past_guesses_2.append((guess, hit))
+                if not hit:
+                    hit = False
+                    past_guesses_2.append((guess, hit))
+
 
         guess_box_2.clear()
 
@@ -185,8 +213,8 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
             WIN.blit(enter_continue, (1110 - (enter_continue.get_width() // 2), 850))
 
         if len(guess_box_2) > 0:
-            guess = guess_box_2[0]
-            pygame.draw.circle(WIN, BLACK, (guess[0] + 740, guess[1]), 20)
+            for guess in guess_box_2:
+                pygame.draw.circle(WIN, BLACK, (guess[0] + 740, guess[1]), 20)
 
         for (guess, is_hit) in past_guesses_2:
             if is_hit:
@@ -194,16 +222,29 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
             else:
                 pygame.draw.circle(WIN, RED, (guess[0] + 740, guess[1]), 20)
 
+        # for i in guess_box_1:
+        #     print("Guess box 1: ", i)
+
+        # for i, bol in past_guesses_1:
+        #     print("Past guesses box 1: ", i)
+
+        # for i in guess_box_2:
+        #     print("Guess box 2: ", i)
+
+        # for i, bol in past_guesses_1:
+        #     print("Past guesses box 2: ", i)
+
         hit = False
         if len(guess_box_1) > 0:
-            for box in selected_boxes_2:
-                if guess_box_1[0] == box:
-                    selected_boxes_2.remove(box)
-                    hit = True
-        if hit and len(guess_box_1) > 0:
-            past_guesses_1.append((guess_box_1[0], True))
-        elif not hit and len(guess_box_1) > 0:
-            past_guesses_1.append((guess_box_1[0], False))
+            for guess in guess_box_1:
+                for box in selected_boxes_2:
+                    if guess == box:
+                        selected_boxes_2.remove(box)
+                        hit = True
+                        past_guesses_1.append((guess, hit))
+                if not hit:
+                    hit = False
+                    past_guesses_1.append((guess, hit))
 
         guess_box_1.clear()
 
@@ -220,6 +261,11 @@ def draw_game(mouse_pos : tuple, selected_boxes_1 : list, selected_boxes_2 : lis
 
 def draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player):
     WIN.fill(BLUE)
+
+    player1 = PLAYER_FONT.render("Player 1", 1, BLACK)
+    player2 = PLAYER_FONT.render("Player 2", 1, BLACK)
+    WIN.blit(player1, ((WIDTH // 4) - (player1.get_width() // 2), 40))
+    WIN.blit(player2, ((WIDTH // 4) + (WIDTH // 2) - (player2.get_width() // 2), 40))
 
     draw_grids()
 
@@ -290,6 +336,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+                pygame.quit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
@@ -320,12 +367,12 @@ def main():
                 if event.key == pygame.K_RETURN:
                     if not to_game:
                         if player == 1:
-                            if len(selected_boxes_1) == 3:
+                            if len(selected_boxes_1) == MAX_SHIP_CHOICES:
                                 player = 2
                             else:
                                 player = 3
                         elif player == 2:
-                            if len(selected_boxes_2) == 3:
+                            if len(selected_boxes_2) == MAX_SHIP_CHOICES:
                                 to_game = True
                                 player = 1
                             else:
@@ -359,11 +406,29 @@ def main():
         #print(str(player))
 
         if to_game:
-            draw_game(mouse_pos, selected_boxes_1, selected_boxes_2, guess_box_1, guess_box_2, past_guesses_1, past_guesses_2, player)
+            if draw_game(mouse_pos, selected_boxes_1, selected_boxes_2, guess_box_1, guess_box_2, past_guesses_1, past_guesses_2, player) == 10:
+                run = False
         else:
             draw_window(mouse_pos, selected_boxes_1, selected_boxes_2, player)
 
-    pygame.quit()
+    menu()
+
+def menu():
+    clock = pygame.time.Clock()
+    run = True
+    while run:
+        clock.tick(FPS)
+
+        WIN.blit(MENU, (0, 0))
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_1:
+                    main()
+                    run = False
 
 if __name__ == "__main__":
-    main()
+    menu()
